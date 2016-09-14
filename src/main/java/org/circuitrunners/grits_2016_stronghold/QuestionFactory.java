@@ -1,0 +1,22 @@
+package org.circuitrunners.grits_2016_stronghold;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ * Created by runner on 9/14/16.
+ */
+public class QuestionFactory {
+
+    private static int lastQuestionIndex = -1;
+
+    public static String produceQuestion() {
+        String[] questions = {"How was school?", "What is the meaning of life?", "What are you most proud of?", "Who is your favorite US president? Mine is George W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W Bush."};
+        int randomIndex = ThreadLocalRandom.current().nextInt(0, 6);
+        if (randomIndex == lastQuestionIndex) {
+            return produceQuestion();
+        } else {
+            lastQuestionIndex = randomIndex;
+            return questions[randomIndex];
+        }
+    }
+}

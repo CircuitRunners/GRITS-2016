@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Robot extends IterativeRobot {
 
@@ -14,7 +14,7 @@ public class Robot extends IterativeRobot {
     Talon backLeft;
     Talon backRight;
 
-    HashMap<Talon, ButtonGroup> basicMotors = new HashMap<>();
+    ArrayList<BasicMotor> basicMotors = new ArrayList<>();
 
     RobotDrive drive;
 
@@ -22,15 +22,17 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        frontLeft = new Talon(0);
-        frontRight = new Talon(1);
-        backLeft = new Talon(2);
-        backRight = new Talon(3);
+        QuestionAnswerFactory.produceQA();
+        System.gc();
+        frontLeft = new Talon(RobotMap.FRONT_LEFT.getPort());
+        frontRight = new Talon(RobotMap.FRONT_RIGHT.getPort());
+        backLeft = new Talon(RobotMap.BACK_LEFT.getPort());
+        backRight = new Talon(RobotMap.BACK_RIGHT.getPort());
 
-        int[][] basicMotorPorts = {{4, 4, 5}, {5, 6, 7}, {6, 0, 1}, {7, 2, 3}};
-
-        for (int[] ids : basicMotorPorts) {
-            basicMotors.put(new Talon(ids[0]), new ButtonGroup(ids[1], ids[2]));
+        for (RobotMap motor : RobotMap.values()) {
+            if (motor.getButtons() != null) {
+                basicMotors.add(new BasicMotor(new Talon(motor.getPort()), new ButtonGroup(motor.getButtons().getForward(), motor.getButtons().getBackward())));
+            }
         }
 
         joystick = new Joystick(0);
@@ -42,16 +44,10 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         boolean threshold = joystick.getMagnitude() > 0.1;
         drive.arcadeDrive(threshold ? joystick.getMagnitude() : 0, threshold ? -Math.cos(joystick.getDirectionRadians()) : 0);
-        basicMotors.forEach(this::basicMotor);
-    }
-
-    private void basicMotor(Talon motor, ButtonGroup buttons) {
-        if (joystick.getRawButton(buttons.getForward())) {
-            motor.set(1);
-        } else if (joystick.getRawButton(buttons.getBackward())) {
-            motor.set(-1);
-        } else {
-            motor.set(0);
+        for (BasicMotor b : basicMotors) {
+            b.run(joystick);
         }
     }
+
+
 }
