@@ -2,9 +2,6 @@ package org.circuitrunners.grits_2016_stronghold;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Created by runner on 9/14/16.
- */
 public class QuestionFactory {
 
     private static int lastQuestionIndex = -1;

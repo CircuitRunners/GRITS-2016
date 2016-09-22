@@ -1,34 +1,28 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 public enum RobotMap {
-    FRONT_LEFT(0),
-    FRONT_RIGHT(1),
-    BACK_LEFT(2),
-    BACK_RIGHT(3),
-    INTAKE_ARM(4, new ButtonGroup(4, 5)),
-    INTAKE_HEAD(5, new ButtonGroup(6, 7)),
-    SHOOTER(6, new ButtonGroup(0, 1)),
-    AIMER(7, new ButtonGroup(2, 3));
+    FRONT_LEFT(null, 0),
+    FRONT_RIGHT(null, 1),
+    BACK_LEFT(null, 2),
+    BACK_RIGHT(null, 3),
+    INTAKE_ARM(new ButtonGroup(5, 6), 4),
+    INTAKE_HEAD(new ButtonGroup(7, 8), 5),
+    SHOOTER(new ButtonGroup(1, 2), 6),
+    AIMER(new ButtonGroup(3, 4), 7);
 
-    int port;
-    ButtonGroup buttons = null;
+    int ports;
+    ButtonGroup buttons;
 
-    RobotMap(int port) {
-        this.port = port;
-    }
-
-    RobotMap(int port, ButtonGroup buttons) {
-        this.port = port;
+    RobotMap(ButtonGroup buttons, int ports) {
+        this.ports = ports;
         this.buttons = buttons;
     }
 
     public int getPort() {
-        return port;
+        return ports;
     }
 
     public ButtonGroup getButtons() {
         return buttons;
     }
 }
-
-

@@ -14,7 +14,7 @@ public class Robot extends IterativeRobot {
     Talon backLeft;
     Talon backRight;
 
-    ArrayList<BasicMotor> basicMotors = new ArrayList<>();
+    ArrayList<BasicSystem> systems = new ArrayList<>();
 
     RobotDrive drive;
 
@@ -22,16 +22,19 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        QuestionAnswerFactory.produceQA();
-        System.gc();
+        //SmartDashboard.putString("question", QuestionAnswerFactory.produceQA()[0]);
+        //SmartDashboard.putString("answer", QuestionAnswerFactory.produceQA()[1]);
         frontLeft = new Talon(RobotMap.FRONT_LEFT.getPort());
         frontRight = new Talon(RobotMap.FRONT_RIGHT.getPort());
         backLeft = new Talon(RobotMap.BACK_LEFT.getPort());
         backRight = new Talon(RobotMap.BACK_RIGHT.getPort());
 
+        frontRight.setInverted(true);
+        backRight.setInverted(true);
+
         for (RobotMap motor : RobotMap.values()) {
             if (motor.getButtons() != null) {
-                basicMotors.add(new BasicMotor(new Talon(motor.getPort()), new ButtonGroup(motor.getButtons().getForward(), motor.getButtons().getBackward())));
+                systems.add(new BasicSystem(motor.getButtons(), new Talon(motor.getPort())));
             }
         }
 
@@ -44,10 +47,6 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         boolean threshold = joystick.getMagnitude() > 0.1;
         drive.arcadeDrive(threshold ? joystick.getMagnitude() : 0, threshold ? -Math.cos(joystick.getDirectionRadians()) : 0);
-        for (BasicMotor b : basicMotors) {
-            b.run(joystick);
-        }
+        systems.forEach(b -> b.run(b.getFlipper(joystick)));
     }
-
-
 }
