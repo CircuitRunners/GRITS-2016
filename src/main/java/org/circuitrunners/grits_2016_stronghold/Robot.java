@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot {
         backLeft = new Talon(RobotMap.BACK_LEFT.getPorts()[0]);
         backRight = new Talon(RobotMap.BACK_RIGHT.getPorts()[0]);
 
-        frontRight.setInverted(true);
-        backRight.setInverted(true);
+        frontLeft.setInverted(true);
+        backLeft.setInverted(true);
 
         for (RobotMap system : RobotMap.values()) {
             if (system.getButtons() != null) {
@@ -50,8 +50,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        boolean threshold = joystick.getMagnitude() > 0.1;
-        drive.arcadeDrive(threshold ? joystick.getMagnitude() : 0, threshold ? -Math.cos(joystick.getDirectionRadians()) : 0);
+        boolean threshold = joystick.getMagnitude() >= 0.1;
+        drive.arcadeDrive(threshold ? joystick.getX() : 0, threshold ? joystick.getY() : 0);
         systems.forEach(b -> b.run(b.getFlipper(joystick)));
     }
 }
