@@ -1,51 +1,49 @@
 package org.circuitrunners.grits_2016_stronghold;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class Robot extends IterativeRobot {
+    private ArrayList<Talon> driveSystem = new ArrayList<>();
+    private ArrayList<BasicSystem> systems = new ArrayList<>();
 
-    Talon frontLeft;
-    Talon frontRight;
-    Talon backLeft;
-    Talon backRight;
+    private RobotDrive drive;
 
-    ArrayList<BasicSystem> systems = new ArrayList<>();
-
-    RobotDrive drive;
-
-    Joystick joystick;
+    private Joystick joystick;
 
     @Override
     public void robotInit() {
-        //SmartDashboard.putString("question", QuestionAnswerFactory.produceQA()[0]);
-        //SmartDashboard.putString("answer", QuestionAnswerFactory.produceQA()[1]);
-        frontLeft = new Talon(RobotMap.FRONT_LEFT.getPorts()[0]);
-        frontRight = new Talon(RobotMap.FRONT_RIGHT.getPorts()[0]);
-        backLeft = new Talon(RobotMap.BACK_LEFT.getPorts()[0]);
-        backRight = new Talon(RobotMap.BACK_RIGHT.getPorts()[0]);
+        SmartDashboard.putString("question", QuestionAnswerFactory.produceQA()[0]);
+        SmartDashboard.putString("answer", QuestionAnswerFactory.produceQA()[1]);
 
-        frontLeft.setInverted(true);
-        backLeft.setInverted(true);
-
+        Talon motor;
         for (RobotMap system : RobotMap.values()) {
-            if (system.getButtons() != null) {
+            if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
                 if (system.getInverted()) {
                     systems.add(new InvertedSystem(system.getButtons(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                 } else {
                     systems.add(new BasicSystem(system.getButtons(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                 }
+            } else if (system.getType() == RobotMap.MapMotorType.DRIVE_MOTOR){
+                motor = new Talon(system.getPorts()[0]);
+                if (system.getInverted()) {
+                    motor.setInverted(true);
+                }
+                driveSystem.add(motor);
+            } else {
+                System.out.println("Did you just assume my MapMotorType?!?!?!");
             }
         }
 
+        driveSystem.sort(Comparator.comparingInt(PWM::getChannel));
+
         joystick = new Joystick(0);
 
-        drive = new RobotDrive(frontLeft, backLeft, frontRight, backRight);
+        drive = new RobotDrive(driveSystem.get(0), driveSystem.get(1), driveSystem.get(2), driveSystem.get(3));
     }
 
     @Override
