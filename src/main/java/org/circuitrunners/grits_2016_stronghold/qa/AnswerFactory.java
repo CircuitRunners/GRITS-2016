@@ -1,4 +1,4 @@
-package org.circuitrunners.grits_2016_stronghold;
+package org.circuitrunners.grits_2016_stronghold.qa;
 
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -2,6 +2,11 @@ package org.circuitrunners.grits_2016_stronghold;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.circuitrunners.grits_2016_stronghold.qa.QuestionAnswerFactory;
+import org.circuitrunners.grits_2016_stronghold.system.BasicRobotSystem;
+import org.circuitrunners.grits_2016_stronghold.system.DoubleSolenoidRobotSystem;
+import org.circuitrunners.grits_2016_stronghold.system.InvertedRobotSystem;
+import org.circuitrunners.grits_2016_stronghold.system.RobotSystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +14,7 @@ import java.util.Comparator;
 
 public class Robot extends IterativeRobot {
     private ArrayList<Talon> driveSystem = new ArrayList<>();
-    private ArrayList<BasicSystem> systems = new ArrayList<>();
+    private ArrayList<RobotSystem> systems = new ArrayList<>();
 
     private RobotDrive drive;
 
@@ -22,20 +27,29 @@ public class Robot extends IterativeRobot {
 
         Talon motor;
         for (RobotMap system : RobotMap.values()) {
-            if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
-                if (system.getInverted()) {
-                    systems.add(new InvertedSystem(system.getButtons(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
-                } else {
-                    systems.add(new BasicSystem(system.getButtons(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
-                }
-            } else if (system.getType() == RobotMap.MapMotorType.DRIVE_MOTOR){
-                motor = new Talon(system.getPorts()[0]);
-                if (system.getInverted()) {
-                    motor.setInverted(true);
-                }
-                driveSystem.add(motor);
-            } else {
-                System.out.println("Did you just assume my MapMotorType?!?!?!");
+            switch (system.getType()) {
+                case SYSTEM_MOTOR:
+                    if (system.isOpposite()) {
+                        systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                    } else {
+                        systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                    }
+                    break;
+                case DRIVE_MOTOR:
+                    motor = new Talon(system.getPorts()[0]);
+                    if (system.getInverted()) {
+                        motor.setInverted(true);
+                    }
+                    driveSystem.add(motor);
+                    break;
+                case DOUBLE_SOLENOID:
+                    systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(system.getPorts()[0], system.getPorts()[1])));
+                    break;
+                case SWITCH:
+                    systems.add();
+                default:
+                    System.out.println("Did you just assume my MapMotorType?!?!?!");
+                    break;
             }
         }
 
@@ -43,13 +57,13 @@ public class Robot extends IterativeRobot {
 
         joystick = new Joystick(0);
 
-        drive = new RobotDrive(driveSystem.get(0), driveSystem.get(1), driveSystem.get(2), driveSystem.get(3));
+        drive = new RobotDrive(driveSystem.get(RobotMap.FRONT_LEFT.getPorts()[0]), driveSystem.get(RobotMap.FRONT_RIGHT.getPorts()[0]), driveSystem.get(RobotMap.REAR_LEFT.getPorts()[0]), driveSystem.get(RobotMap.REAR_RIGHT.getPorts()[0]));
     }
 
     @Override
     public void teleopPeriodic() {
-        boolean threshold = joystick.getMagnitude() >= 0.1;
-        drive.arcadeDrive(threshold ? joystick.getX() : 0, threshold ? joystick.getY() : 0);
-        systems.forEach(b -> b.run(b.getFlipper(joystick)));
+        boolean threshold = joystick.getMagnitude() >= 0.05;
+        drive.arcadeDrive(threshold ? joystick.getY() : 0, threshold ? joystick.getX() : 0);
+
     }
 }

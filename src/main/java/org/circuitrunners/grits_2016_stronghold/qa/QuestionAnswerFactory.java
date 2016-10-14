@@ -1,4 +1,4 @@
-package org.circuitrunners.grits_2016_stronghold;
+package org.circuitrunners.grits_2016_stronghold.qa;
 
 public class QuestionAnswerFactory {
     public static String[] produceQA() {
