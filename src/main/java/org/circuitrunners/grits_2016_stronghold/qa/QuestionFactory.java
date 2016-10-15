@@ -8,7 +8,7 @@ public class QuestionFactory {
 
     public static String produceQuestion() {
         String[] questions = {"How was school?", "What is the meaning of life?", "What are you most proud of?", "Who is your favorite US president? Mine is George W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W Bush."};
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, 5);
+        int randomIndex = ThreadLocalRandom.current().nextInt(0, 4);
         if (randomIndex == lastQuestionIndex) {
             return produceQuestion();
         } else {

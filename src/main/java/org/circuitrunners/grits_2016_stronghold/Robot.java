@@ -1,7 +1,6 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.circuitrunners.grits_2016_stronghold.qa.QuestionAnswerFactory;
 import org.circuitrunners.grits_2016_stronghold.system.BasicRobotSystem;
 import org.circuitrunners.grits_2016_stronghold.system.DoubleSolenoidRobotSystem;
@@ -22,34 +21,27 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        SmartDashboard.putString("question", QuestionAnswerFactory.produceQA()[0]);
-        SmartDashboard.putString("answer", QuestionAnswerFactory.produceQA()[1]);
+        System.out.println("question: " + QuestionAnswerFactory.produceQA()[0]);
+        System.out.println("answer" + QuestionAnswerFactory.produceQA()[1]);
 
         Talon motor;
         for (RobotMap system : RobotMap.values()) {
-            switch (system.getType()) {
-                case SYSTEM_MOTOR:
-                    if (system.isOpposite()) {
-                        systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
-                    } else {
-                        systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
-                    }
-                    break;
-                case DRIVE_MOTOR:
-                    motor = new Talon(system.getPorts()[0]);
-                    if (system.getInverted()) {
-                        motor.setInverted(true);
-                    }
-                    driveSystem.add(motor);
-                    break;
-                case DOUBLE_SOLENOID:
-                    systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(system.getPorts()[0], system.getPorts()[1])));
-                    break;
-                case SWITCH:
-                    systems.add();
-                default:
-                    System.out.println("Did you just assume my MapMotorType?!?!?!");
-                    break;
+            if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
+                if (system.isOpposite()) {
+                    systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                } else {
+                    systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                }
+            } else if (system.getType() == RobotMap.MapMotorType.DRIVE_MOTOR) {
+                motor = new Talon(system.getPorts()[0]);
+                if (system.getInverted()) {
+                    motor.setInverted(true);
+                }
+                driveSystem.add(motor);
+            } else if (system.getType() == RobotMap.MapMotorType.DOUBLE_SOLENOID) {
+                systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(system.getPorts()[0], system.getPorts()[1])));
+            } else {
+                System.out.println("Did you just assume my MapMotorType?!?!?!");
             }
         }
 
@@ -57,13 +49,13 @@ public class Robot extends IterativeRobot {
 
         joystick = new Joystick(0);
 
-        drive = new RobotDrive(driveSystem.get(RobotMap.FRONT_LEFT.getPorts()[0]), driveSystem.get(RobotMap.FRONT_RIGHT.getPorts()[0]), driveSystem.get(RobotMap.REAR_LEFT.getPorts()[0]), driveSystem.get(RobotMap.REAR_RIGHT.getPorts()[0]));
+        drive = new RobotDrive(driveSystem.get(0), driveSystem.get(2), driveSystem.get(1), driveSystem.get(3));
     }
 
     @Override
     public void teleopPeriodic() {
         boolean threshold = joystick.getMagnitude() >= 0.05;
         drive.arcadeDrive(threshold ? joystick.getY() : 0, threshold ? joystick.getX() : 0);
-
+        systems.forEach(s -> s.run(joystick));
     }
 }
