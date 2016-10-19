@@ -3,20 +3,20 @@ package org.circuitrunners.grits_2016_stronghold;
 public enum RobotMap {
     FLASHLIGHT(new ButtonGroup(10, 10), MapMotorType.SWITCH, 1), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
     FRONT_LEFT(MapMotorType.DRIVE_MOTOR, true, 2),
-    FRONT_RIGHT(MapMotorType.DRIVE_MOTOR, true, 8),
-    REAR_LEFT(MapMotorType.DRIVE_MOTOR, 3),
+    FRONT_RIGHT(MapMotorType.DRIVE_MOTOR, 8),
+    REAR_LEFT(MapMotorType.DRIVE_MOTOR, true, 3),
     REAR_RIGHT(MapMotorType.DRIVE_MOTOR, 9),
-    INTAKE_ARM(new ButtonGroup(4, 6), MapMotorType.SYSTEM_MOTOR, 4, 5),
+    INTAKE_ARM(new ButtonGroup(4, 5), MapMotorType.SYSTEM_MOTOR, 4, 5),
     SHOOTER(new ButtonGroup(1, 2), MapMotorType.SYSTEM_MOTOR, true, true, true, 6, 7),
-    LIFTER(new ButtonGroup(9, 9), MapMotorType.DOUBLE_SOLENOID, 0, 1),
-    SCALER(new ButtonGroup(11, 12), MapMotorType.CAN, 1), //
-    ROLLERS(new ButtonGroup(7, 8), MapMotorType.CAN, 2), //
-    AIMER(new ButtonGroup(3, 5), MapMotorType.CAN_ENCODER, 2); //
+    LIFTER(new ButtonGroup(1, 2), MapMotorType.DOUBLE_SOLENOID, 0, 1),
+    SCALER(new ButtonGroup(11, 11), MapMotorType.CAN, 11), //
+    ROLLERS(new ButtonGroup(8, 9), MapMotorType.CAN, 13), //
+    AIMER(new ButtonGroup(6, 7), MapMotorType.CAN, 12); //
 
     private boolean inverted = false;
     private MapMotorType type;
-    private boolean opposite;
-    private boolean flop;
+    private boolean opposite = false;
+    private boolean flop = false;
     private int[] ports;
     private ButtonGroup buttons = null;
 
@@ -90,7 +90,6 @@ public enum RobotMap {
         SYSTEM_MOTOR,
         DOUBLE_SOLENOID,
         SWITCH,
-        CAN,
-        CAN_ENCODER
+        CAN
     }
 }
