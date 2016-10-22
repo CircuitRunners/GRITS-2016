@@ -1,72 +1,90 @@
 package org.circuitrunners.grits_2016_stronghold;
 
-public enum RobotMap {
-    FLASHLIGHT(new ButtonGroup(1, 1), MapMotorType.SWITCH, JoystickType.XBOX, 0), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
-    FRONT_LEFT(MapMotorType.DRIVE_MOTOR, true, 2),
-    FRONT_RIGHT(MapMotorType.DRIVE_MOTOR, 8),
-    REAR_LEFT(MapMotorType.DRIVE_MOTOR, true, 3),
-    REAR_RIGHT(MapMotorType.DRIVE_MOTOR, 9),
-    INTAKE_ARM(new ButtonGroup(3, 2), MapMotorType.SYSTEM_MOTOR, JoystickType.XBOX, 4, 5),
-    SHOOTER(new ButtonGroup(2, 3), MapMotorType.SYSTEM_MOTOR, true, true, true, JoystickType.JOYSTICK, 6, 7),
-    LIFTER(new ButtonGroup(1, 9), MapMotorType.DOUBLE_SOLENOID, 0, 1),
-    ROLLERS(new ButtonGroup(5, 4), MapMotorType.CAN, 12),
-    AIMER(new ButtonGroup(6, 7), MapMotorType.CAN, false, true, JoystickType.JOYSTICK, 13);
+import edu.wpi.first.wpilibj.Joystick;
 
-    private boolean inverted = false;
-    private MapMotorType type;
+public enum RobotMap {
+    FLASHLIGHT(new ButtonGroup(1, 1), SystemType.SWITCH, JoystickType.XBOX, 0), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
+    FRONT_LEFT(SystemType.DRIVE_MOTOR, true, 2),
+    FRONT_RIGHT(SystemType.DRIVE_MOTOR, 8),
+    REAR_LEFT(SystemType.DRIVE_MOTOR, true, 3),
+    REAR_RIGHT(SystemType.DRIVE_MOTOR, 9),
+    INTAKE_ARM(new ButtonGroup(3, 2), JoystickType.XBOX, 4, 5),
+    SHOOTER(new ButtonGroup(3, 2), 6, 7),
+    LIFTER(new ButtonGroup(1, 9), SystemType.DOUBLE_SOLENOID, 0, 1),
+    ROLLERS(new ButtonGroup(5, 4), SystemType.CAN, 12),
+    AIMER(1, SystemType.CAN, true, 13);
+
+    private SystemType type = SystemType.SYSTEM_MOTOR;
     private JoystickType joystickType = JoystickType.JOYSTICK;
-    private boolean opposite = false;
-    private boolean flop = false;
+    /*
+     * Alternative mode - a convenient switch for a special setting according to the motor type
+     * System motor: every other motor moves in the opposite direction
+     * Drive motor: flips direction of the drive motor
+     * CAN motor: sets it to half speed
+     */
+    private boolean alternative = false;
     private int[] ports;
     private ButtonGroup buttons = null;
+    private int axis = -1;
 
-    RobotMap(MapMotorType type, int... ports) {
+    RobotMap(SystemType type, int... ports) {
         this.type = type;
         this.ports = ports;
     }
 
-    RobotMap(ButtonGroup buttons, MapMotorType type, int... ports) {
+    RobotMap(ButtonGroup buttons, int... ports) {
+        this.buttons = buttons;
+        this.ports = ports;
+    }
+
+    RobotMap(int axis, int... ports) {
+        this.axis = axis;
+        this.ports = ports;
+    }
+
+    RobotMap(ButtonGroup buttons, SystemType type, int... ports) {
         this.buttons = buttons;
         this.type = type;
         this.ports = ports;
     }
 
-    RobotMap(ButtonGroup buttons, MapMotorType type, JoystickType joystickType, int... ports) {
+    RobotMap(ButtonGroup buttons, JoystickType joystickType, int... ports) {
+        this.buttons = buttons;
+        this.joystickType = joystickType;
+        this.ports = ports;
+    }
+
+    RobotMap(ButtonGroup buttons, SystemType type, JoystickType joystickType, int... ports) {
         this.buttons = buttons;
         this.type = type;
         this.joystickType = joystickType;
         this.ports = ports;
     }
 
-    RobotMap(MapMotorType type, boolean inverted, int... ports) {
+    RobotMap(SystemType type, boolean alternative, int... ports) {
         this.type = type;
-        this.inverted = inverted;
+        this.alternative = alternative;
         this.ports = ports;
     }
 
-    RobotMap(ButtonGroup buttons, MapMotorType type, boolean inverted, JoystickType joystickType, int... ports) {
+    RobotMap(ButtonGroup buttons, SystemType type, boolean alternative, int... ports) {
         this.buttons = buttons;
         this.type = type;
-        this.inverted = inverted;
-        this.joystickType = joystickType;
+        this.alternative = alternative;
         this.ports = ports;
     }
 
-    RobotMap(ButtonGroup buttons, MapMotorType type, boolean inverted, boolean opposite, JoystickType joystickType, int... ports) {
-        this.buttons = buttons;
+    RobotMap(int axis, SystemType type, boolean alternative, int... ports) {
+        this.axis = axis;
         this.type = type;
-        this.inverted = inverted;
-        this.opposite = opposite;
-        this.joystickType = joystickType;
+        this.alternative = alternative;
         this.ports = ports;
     }
 
-    RobotMap(ButtonGroup buttons, MapMotorType type, boolean inverted, boolean opposite, boolean flop, JoystickType joystickType, int... ports) {
+    RobotMap(ButtonGroup buttons, SystemType type, boolean alternative, JoystickType joystickType, int... ports) {
         this.buttons = buttons;
         this.type = type;
-        this.inverted = inverted;
-        this.opposite = opposite;
-        this.flop = flop;
+        this.alternative = alternative;
         this.joystickType = joystickType;
         this.ports = ports;
     }
@@ -79,27 +97,23 @@ public enum RobotMap {
         return buttons;
     }
 
-    public boolean getInverted() {
-        return inverted;
+    public boolean isAlternative() {
+        return alternative;
     }
 
-    public MapMotorType getType() {
+    public SystemType getType() {
         return type;
-    }
-
-    public boolean isOpposite() {
-        return opposite;
-    }
-
-    public boolean isFlop() {
-        return flop;
     }
 
     public JoystickType getJoystickType() {
         return joystickType;
     }
 
-    public enum MapMotorType {
+    public int getAxis() {
+        return axis;
+    }
+
+    public enum SystemType {
         DRIVE_MOTOR,
         SYSTEM_MOTOR,
         DOUBLE_SOLENOID,

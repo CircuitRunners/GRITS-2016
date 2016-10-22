@@ -1,7 +1,6 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 import edu.wpi.first.wpilibj.*;
-import org.circuitrunners.grits_2016_stronghold.qa.AutonomousJoystick;
 import org.circuitrunners.grits_2016_stronghold.qa.QuestionAnswerFactory;
 import org.circuitrunners.grits_2016_stronghold.system.*;
 
@@ -21,20 +20,26 @@ public class Robot extends IterativeRobot {
 
     private RobotDriveThread robotDriveThread;
 
+    DigitalInput limitSwitch;
+
     @Override
     public void robotInit() {
         Arrays.asList(RobotMap.values()).parallelStream().forEach(system -> {
             switch (system.getType()) {
                 case SYSTEM_MOTOR:
-                    if (system.isOpposite()) {
-                        systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                    if (system.getButtons() != null) {
+                        if (system.isAlternative()) {
+                            systems.add(new InvertedRobotSystem(system.getButtons(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                        } else {
+                            systems.add(new BasicRobotSystem(system.getButtons(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                        }
                     } else {
-                        systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                        systems.add(new BasicRobotSystem(system.getAxis(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                     }
                     break;
                 case DRIVE_MOTOR:
                     Talon motor = new Talon(system.getPorts()[0]);
-                    if (system.getInverted()) {
+                    if (system.isAlternative()) {
                         motor.setInverted(true);
                     }
                     driveSystem.add(motor);
@@ -43,13 +48,17 @@ public class Robot extends IterativeRobot {
                     systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(1, system.getPorts()[0], system.getPorts()[1])));
                     break;
                 case CAN:
-                    systems.add(new CANRobotSystem(system.getButtons(), system.getInverted(), system.isOpposite(), new CANTalon(system.getPorts()[0])));
+                    if (system.getButtons() != null) {
+                        systems.add(new CANRobotSystem(system.getButtons(), system.isAlternative(), Arrays.stream(system.getPorts()).mapToObj(CANTalon::new).toArray(CANTalon[]::new)));
+                    } else {
+                        systems.add(new CANRobotSystem(system.getAxis(), system.isAlternative(), Arrays.stream(system.getPorts()).mapToObj(CANTalon::new).toArray(CANTalon[]::new)));
+                    }
                     break;
                 case SWITCH:
-                    systems.add(new SwitchSystem(system.getButtons(), system.getJoystickType(), new Relay(system.getPorts()[0])));
+                    systems.add(new SwitchSystem(system.getButtons(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Relay::new).toArray(Relay[]::new)));
                     break;
                 default:
-                    System.out.println("Did you just assume my MapMotorType?!?!?! I'm " + system.getType() + "!!!!!!! [TRIGGERED]");
+                    System.out.println("Unhandled system type: " + system.getType());
                     break;
             }
         });
@@ -60,39 +69,39 @@ public class Robot extends IterativeRobot {
         joystick = new Joystick(0);
         xbox = new Joystick(1);
 
+        limitSwitch = new DigitalInput(1);
+
         String[] qa = QuestionAnswerFactory.produceQA();
-        System.out.println("question: " + qa[0] + "\nanswer: " + qa[1]);
+        System.out.println("Question: " + qa[0] + " Answer: " + qa[1]);
     }
 
     @Override
     public void autonomousInit() {
-        /*lsd = new AutonomousJoystick(5);
-        lsd.setRawButton(3, true);
-        systems.forEach(s -> s.run(lsd));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            lsd.setRawButton(3, false);
-            systems.forEach(s -> s.run(lsd));
+        lsd = new AutonomousJoystick(2);
+
+        lsd.setRawButton(2, true);
+
+        long stop = System.currentTimeMillis() + 1000;
+        while (System.currentTimeMillis() < stop && limitSwitch.get()) {
+            systems.parallelStream().forEach(s -> {
+                if (s.getJoystickType() == RobotMap.JoystickType.XBOX) {
+                    s.run(lsd);
+                }
+            });
         }
-        lsd.setRawButton(3, false);
-        systems.forEach(s -> s.run(lsd));
-        drive.arcadeDrive(1, 0);
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            drive.arcadeDrive(0, 0);
+        lsd.setRawButton(2, false);
+        systems.parallelStream().forEach(s -> s.run(lsd));
+
+        stop = System.currentTimeMillis() + 4000;
+        while (System.currentTimeMillis() < stop) {
+            drive.arcadeDrive(-0.5, 0);
         }
-        drive.arcadeDrive(0, 0);*/
+        drive.arcadeDrive(0, 0);
     }
 
     @Override
     public void teleopInit() {
-        if (robotDriveThread == null) {
-            robotDriveThread = new RobotDriveThread();
-        }
+        robotDriveThread = new RobotDriveThread();
         robotDriveThread.start();
     }
 
@@ -116,5 +125,10 @@ public class Robot extends IterativeRobot {
         public void interrupt() {
             drive.arcadeDrive(0, 0);
         }
+    }
+
+    @Override
+    public void disabledInit() {
+        drive.arcadeDrive(0, 0);
     }
 }

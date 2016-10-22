@@ -9,31 +9,40 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BasicRobotSystem implements RobotSystem {
-    ButtonGroup buttons;
+    private ButtonGroup buttons = null;
     private RobotMap.JoystickType joystickType;
     ArrayList<Talon> motors;
-    private boolean flip;
+    private int axis;
 
-    public BasicRobotSystem(ButtonGroup buttons, boolean flip, RobotMap.JoystickType joystickType, Talon... motors) {
+    public BasicRobotSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, Talon... motors) {
         this.buttons = buttons;
-        this.flip = flip;
         this.joystickType = joystickType;
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
-    protected int getFlipper(Joystick joystick) {
-        int flop = flip ? -1 : 1;
-        if (joystick.getRawButton(buttons.getForward())) {
-            return flop;
-        } else if (joystick.getRawButton(buttons.getBackward())) {
-            return -flop;
+    public BasicRobotSystem(int axis, RobotMap.JoystickType joystickType, Talon... motors) {
+        this.axis = axis;
+        this.joystickType = joystickType;
+        this.motors = new ArrayList<>(Arrays.asList(motors));
+    }
+
+    double getFlipper(Joystick joystick) {
+        if (buttons != null) {
+            if (joystick.getRawButton(buttons.getForward())) {
+                return 1;
+            } else if (joystick.getRawButton(buttons.getBackward())) {
+                return -1;
+            } else {
+                return 0;
+            }
         } else {
-            return 0;
+            double raw = joystick.getRawAxis(axis);
+            return Math.abs(raw) >= 0.05 ? raw : 0;
         }
     }
 
     public void run(Joystick joystick) {
-        motors.forEach(motor -> motor.set(getFlipper(joystick)));
+        motors.parallelStream().forEach(motor -> motor.set(getFlipper(joystick)));
     }
 
     public RobotMap.JoystickType getJoystickType() {

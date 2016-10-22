@@ -12,7 +12,7 @@ public class SwitchSystem implements RobotSystem {
 
     private final ButtonGroup buttons;
     private RobotMap.JoystickType joystickType;
-    ArrayList<Relay> motors;
+    private ArrayList<Relay> motors;
     private boolean pressed = false;
 
     public SwitchSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, Relay... motors) {
@@ -21,7 +21,7 @@ public class SwitchSystem implements RobotSystem {
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
-    protected Relay.Value getFlipper(Joystick joystick) {
+    private Relay.Value getFlipper(Joystick joystick) {
         if (joystick.getRawButton(buttons.getForward())) {
             pressed = !pressed;
         }
@@ -30,7 +30,7 @@ public class SwitchSystem implements RobotSystem {
 
     @Override
     public void run(Joystick joystick) {
-        motors.forEach(m -> m.set(getFlipper(joystick)));
+        motors.parallelStream().forEach(m -> m.set(getFlipper(joystick)));
     }
 
     @Override

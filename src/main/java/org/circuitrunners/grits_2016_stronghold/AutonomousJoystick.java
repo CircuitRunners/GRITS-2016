@@ -1,4 +1,4 @@
-package org.circuitrunners.grits_2016_stronghold.qa;
+package org.circuitrunners.grits_2016_stronghold;
 
 import edu.wpi.first.wpilibj.Joystick;
 

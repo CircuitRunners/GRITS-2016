@@ -7,7 +7,7 @@ import org.circuitrunners.grits_2016_stronghold.RobotMap;
 
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-public class DoubleSolenoidRobotSystem implements RobotSystem {   //Works best when the system is plugged in right side up.
+public class DoubleSolenoidRobotSystem implements RobotSystem {   // Works best when the system is plugged in right side up.
 
     private ButtonGroup buttons;
     private DoubleSolenoid solenoid;
@@ -33,6 +33,6 @@ public class DoubleSolenoidRobotSystem implements RobotSystem {   //Works best w
 
     @Override
     public RobotMap.JoystickType getJoystickType() {
-        return null;
+        return null; // meh, it doesn't use xbox so we don't need to implement this
     }
 }
