@@ -24,8 +24,8 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        Talon motor;
-        for (RobotMap system : RobotMap.values()) {
+        Arrays.asList(RobotMap.values()).parallelStream().forEach(system -> {
+            Talon motor;
             if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
                 if (system.isOpposite()) {
                     systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
             } else {
                 System.out.println("Did you just assume my MapMotorType?!?!?! I'm " + system.getType() + "!!!!!!! [TRIGGERED]");
             }
-        }
+        });
 
         driveSystem.sort(Comparator.comparingInt(PWM::getChannel));
 
