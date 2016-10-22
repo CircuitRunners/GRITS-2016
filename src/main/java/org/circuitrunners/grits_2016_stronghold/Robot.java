@@ -16,11 +16,10 @@ public class Robot extends IterativeRobot {
 
     private Joystick joystick;
 
+    private Joystick xbox;
+
     @Override
     public void robotInit() {
-        System.out.println("question: " + QuestionAnswerFactory.produceQA()[0]);
-        System.out.println("answer: " + QuestionAnswerFactory.produceQA()[1]);
-
         Talon motor;
         for (RobotMap system : RobotMap.values()) {
             if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
@@ -36,25 +35,31 @@ public class Robot extends IterativeRobot {
                 }
                 driveSystem.add(motor);
             } else if (system.getType() == RobotMap.MapMotorType.DOUBLE_SOLENOID) {
-                systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(system.getPorts()[0], system.getPorts()[1])));
+                systems.add(new DoubleSolenoidRobotSystem(system.getButtons(), new DoubleSolenoid(1, system.getPorts()[0], system.getPorts()[1])));
             } else if (system.getType() == RobotMap.MapMotorType.CAN) {
-                systems.add(new CANRobotSystem(system.getButtons(), system.getInverted(), new CANTalon(system.getPorts()[0])));
+                systems.add(new CANRobotSystem(system.getButtons(), system.getInverted(), system.isOpposite(), new CANTalon(system.getPorts()[0])));
+            } else if (system.getType() == RobotMap.MapMotorType.SWITCH) {
+                systems.add(new SwitchSystem(system.getButtons(), new Relay(system.getPorts()[0])));
             } else {
-                System.out.println("Did you just assume my MapMotorType?!?!?!");
+                System.out.println("Did you just assume my MapMotorType?!?!?! I'm " + system.getType() + "!!!!!!! [TRIGGERED]");
             }
         }
 
         driveSystem.sort(Comparator.comparingInt(PWM::getChannel));
 
         joystick = new Joystick(0);
+        xbox = new Joystick(1);
 
         drive = new RobotDrive(driveSystem.get(0), driveSystem.get(1), driveSystem.get(2), driveSystem.get(3));
+
+        String[] qa = QuestionAnswerFactory.produceQA();
+        System.out.println("question: " + qa[0] + "\nanswer: " + qa[1]);
     }
 
     @Override
     public void teleopPeriodic() {
-        boolean threshold = joystick.getMagnitude() >= 0.05;
-        drive.arcadeDrive(threshold ? joystick.getY() : 0, threshold ? joystick.getX() : 0);
-        systems.forEach(s -> s.run(joystick));
+        boolean thresholdL = joystick.getMagnitude() >= 0.05;
+        drive.arcadeDrive(thresholdL ? joystick.getY() : 0, thresholdL ? joystick.getX() : 0);
+        systems.forEach(s -> s.run(joystick)); // only works with two joysticks
     }
 }

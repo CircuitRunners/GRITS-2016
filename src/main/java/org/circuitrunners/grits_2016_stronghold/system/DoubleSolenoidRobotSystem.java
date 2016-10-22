@@ -4,11 +4,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
 
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.kForward;
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.kOff;
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.kReverse;
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-public class DoubleSolenoidRobotSystem implements RobotSystem {
+public class DoubleSolenoidRobotSystem implements RobotSystem {   //Works best when the system is plugged in right side up.
 
     private ButtonGroup buttons;
     private DoubleSolenoid solenoid;
@@ -18,29 +16,17 @@ public class DoubleSolenoidRobotSystem implements RobotSystem {
         this.solenoid = solenoid;
     }
 
-    private int getFlipper(Joystick joystick) {
+    private DoubleSolenoid.Value getFlipper(Joystick joystick) {
         if (joystick.getRawButton(buttons.getForward())) {
-            return 1;
+            return kForward;
         } else if (joystick.getRawButton(buttons.getBackward())) {
-            return -1;
+            return kReverse;
         } else {
-            return 0;
+            return kOff;
         }
     }
 
     public void run(Joystick joystick) {
-        DoubleSolenoid.Value value;
-        switch (getFlipper(joystick)) {
-            case 1:
-                value = kForward;
-                break;
-            case -1:
-                value = kReverse;
-                break;
-            default:
-                value = kOff;
-                break;
-        }
-        solenoid.set(value);
+        solenoid.set(getFlipper(joystick));
     }
 }

@@ -2,6 +2,7 @@ package org.circuitrunners.grits_2016_stronghold.system;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
 
 import java.util.ArrayList;
@@ -11,21 +12,24 @@ public class CANRobotSystem implements RobotSystem {
 
     private final ButtonGroup buttons;
     private final boolean flip;
+    private final boolean opposite;
     private final ArrayList<CANTalon> motors;
 
-    public CANRobotSystem(ButtonGroup buttons, boolean flip, CANTalon... motors) {
+    public CANRobotSystem(ButtonGroup buttons, boolean flip, boolean opposite, CANTalon... motors) {
         this.buttons = buttons;
         this.flip = flip;
+        this.opposite = opposite;
         this.motors = new ArrayList<>(Arrays.asList(motors));
         for (CANTalon motor : motors) {
-            motor.setControlMode(2);
-            motor.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-            motor.setPID(1, 1, 1);
+            // black magic... don't ask
+            PIDController pidController = new PIDController(-0.001, 0, 0, motor, motor);
+            pidController.disable();
         }
     }
 
-    protected int getFlipper(Joystick joystick) {
-        int flop = flip ? -1 : 1;
+    protected double getFlipper(Joystick joystick) {
+        double thing = opposite ? 0.5 : 1;
+        double flop = flip ? -thing : thing;
         if (joystick.getRawButton(buttons.getForward())) {
             return flop;
         } else if (joystick.getRawButton(buttons.getBackward())) {
@@ -37,7 +41,6 @@ public class CANRobotSystem implements RobotSystem {
 
     @Override
     public void run(Joystick joystick) {
-        final int flipper = getFlipper(joystick);
-        motors.forEach(motor -> motor.set(flipper));
+        motors.forEach(motor -> motor.set(getFlipper(joystick)));
     }
 }
