@@ -31,10 +31,10 @@ public class Robot extends IterativeRobot {
                         if (system.isAlternative()) {
                             systems.add(new InvertedRobotSystem(system.getButtons(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                         } else {
-                            systems.add(new BasicRobotSystem(system.getButtons(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                            systems.add(new BasicRobotSystem(system.getButtons(), system.getJoystickType(), system.getForwardSpeed(), system.getBackwardSpeed(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                         }
                     } else {
-                        systems.add(new BasicRobotSystem(system.getAxis(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                        systems.add(new BasicRobotSystem(system.getAxis(), system.getJoystickType(), system.getForwardSpeed(), system.getBackwardSpeed(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                     }
                     break;
                 case DRIVE_MOTOR:
@@ -78,8 +78,37 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousInit() {
         lsd = new AutonomousJoystick(2);
+        long stop;
+        for (AutonomousSteps autoStep : AutonomousSteps.values()) {
+            RobotMap system = autoStep.getSystem();
+            if (system.getType() == RobotMap.SystemType.DRIVE_MOTOR) {
+                stop = System.currentTimeMillis() + autoStep.getDuration();
+                while (System.currentTimeMillis() < stop) {
+                    drive.arcadeDrive(autoStep.getDirection() ? 1 : -1, 0);
+                }
+                drive.arcadeDrive(0, 0);
+            } else {
+                ButtonGroup buttons = system.getButtons();
+                int button;
+                if (autoStep.getDirection()) {
+                    lsd.setRawButton(button = buttons.getForward(), true);
+                } else {
+                    lsd.setRawButton(button = buttons.getBackward(), true);
+                }
+                stop = System.currentTimeMillis() + autoStep.getDuration();
+                while (System.currentTimeMillis() < stop) {
+                    systems.parallelStream().forEach(s -> {
+                        if (s.getJoystickType() == system.getJoystickType()) {
+                            s.run(lsd);
+                        }
+                    });
+                }
+                lsd.setRawButton(button, false);
+                systems.parallelStream().forEach(s -> s.run(lsd));
+            }
+        }
 
-        lsd.setRawButton(2, true);
+        /*lsd.setRawButton(2, true);
 
         long stop = System.currentTimeMillis() + 1000;
         while (System.currentTimeMillis() < stop && limitSwitch.get()) {
@@ -96,7 +125,7 @@ public class Robot extends IterativeRobot {
         while (System.currentTimeMillis() < stop) {
             drive.arcadeDrive(-0.5, 0);
         }
-        drive.arcadeDrive(0, 0);
+        drive.arcadeDrive(0, 0);*/
     }
 
     @Override

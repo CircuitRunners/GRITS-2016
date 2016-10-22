@@ -9,7 +9,7 @@ public enum RobotMap {
     REAR_LEFT(SystemType.DRIVE_MOTOR, true, 3),
     REAR_RIGHT(SystemType.DRIVE_MOTOR, 9),
     INTAKE_ARM(new ButtonGroup(3, 2), JoystickType.XBOX, 4, 5),
-    SHOOTER(new ButtonGroup(3, 2), 6, 7),
+    SHOOTER(new ButtonGroup(3, 2), 1, 0.5, 6, 7),
     LIFTER(new ButtonGroup(1, 9), SystemType.DOUBLE_SOLENOID, 0, 1),
     ROLLERS(new ButtonGroup(5, 4), SystemType.CAN, 12),
     AIMER(1, SystemType.CAN, true, 13);
@@ -23,6 +23,8 @@ public enum RobotMap {
      * CAN motor: sets it to half speed
      */
     private boolean alternative = false;
+    private double forwardSpeed = 1;
+    private double backwardSpeed = 1;
     private int[] ports;
     private ButtonGroup buttons = null;
     private int axis = -1;
@@ -34,6 +36,13 @@ public enum RobotMap {
 
     RobotMap(ButtonGroup buttons, int... ports) {
         this.buttons = buttons;
+        this.ports = ports;
+    }
+
+    RobotMap(ButtonGroup buttons, double forwardSpeed, double backwardSpeed, int... ports) {
+        this.buttons = buttons;
+        this.forwardSpeed = forwardSpeed;
+        this.backwardSpeed = backwardSpeed;
         this.ports = ports;
     }
 
@@ -111,6 +120,14 @@ public enum RobotMap {
 
     public int getAxis() {
         return axis;
+    }
+
+    public double getForwardSpeed() {
+        return forwardSpeed;
+    }
+
+    public double getBackwardSpeed() {
+        return backwardSpeed;
     }
 
     public enum SystemType {

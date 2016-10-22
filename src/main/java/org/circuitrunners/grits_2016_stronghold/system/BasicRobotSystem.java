@@ -11,33 +11,39 @@ import java.util.Arrays;
 public class BasicRobotSystem implements RobotSystem {
     private ButtonGroup buttons = null;
     private RobotMap.JoystickType joystickType;
+    private double forwardSpeed;
+    private double backwardSpeed;
     ArrayList<Talon> motors;
     private int axis;
 
-    public BasicRobotSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, Talon... motors) {
+    public BasicRobotSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
         this.buttons = buttons;
         this.joystickType = joystickType;
+        this.forwardSpeed = forwardSpeed;
+        this.backwardSpeed = backwardSpeed;
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
-    public BasicRobotSystem(int axis, RobotMap.JoystickType joystickType, Talon... motors) {
+    public BasicRobotSystem(int axis, RobotMap.JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
         this.axis = axis;
         this.joystickType = joystickType;
+        this.forwardSpeed = forwardSpeed;
+        this.backwardSpeed = backwardSpeed;
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
     double getFlipper(Joystick joystick) {
         if (buttons != null) {
             if (joystick.getRawButton(buttons.getForward())) {
-                return 1;
+                return forwardSpeed;
             } else if (joystick.getRawButton(buttons.getBackward())) {
-                return -1;
+                return -backwardSpeed;
             } else {
                 return 0;
             }
         } else {
             double raw = joystick.getRawAxis(axis);
-            return Math.abs(raw) >= 0.05 ? raw : 0;
+            return raw >= 0.05 ? raw * forwardSpeed : raw <= -0.05 ? raw * backwardSpeed : 0;
         }
     }
 
