@@ -3,18 +3,21 @@ package org.circuitrunners.grits_2016_stronghold.system;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
+import org.circuitrunners.grits_2016_stronghold.RobotMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BasicRobotSystem implements RobotSystem {
     ButtonGroup buttons;
+    private RobotMap.JoystickType joystickType;
     ArrayList<Talon> motors;
     private boolean flip;
 
-    public BasicRobotSystem(ButtonGroup buttons, boolean flip, Talon... motors) {
+    public BasicRobotSystem(ButtonGroup buttons, boolean flip, RobotMap.JoystickType joystickType, Talon... motors) {
         this.buttons = buttons;
         this.flip = flip;
+        this.joystickType = joystickType;
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
@@ -31,5 +34,9 @@ public class BasicRobotSystem implements RobotSystem {
 
     public void run(Joystick joystick) {
         motors.forEach(motor -> motor.set(getFlipper(joystick)));
+    }
+
+    public RobotMap.JoystickType getJoystickType() {
+        return joystickType;
     }
 }

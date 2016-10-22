@@ -1,16 +1,16 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 public enum RobotMap {
-    FLASHLIGHT(new ButtonGroup(3, 3), MapMotorType.SWITCH, 1), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
+    FLASHLIGHT(new ButtonGroup(1, 1), MapMotorType.SWITCH, JoystickType.XBOX, 0), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
     FRONT_LEFT(MapMotorType.DRIVE_MOTOR, true, 2),
     FRONT_RIGHT(MapMotorType.DRIVE_MOTOR, 8),
     REAR_LEFT(MapMotorType.DRIVE_MOTOR, true, 3),
     REAR_RIGHT(MapMotorType.DRIVE_MOTOR, 9),
-    INTAKE_ARM(new ButtonGroup(4, 5), MapMotorType.SYSTEM_MOTOR, 4, 5),
-    SHOOTER(new ButtonGroup(1, 2), MapMotorType.SYSTEM_MOTOR, true, true, true, JoystickType.JOYSTICK, 6, 7),
-    LIFTER(new ButtonGroup(1, 2), MapMotorType.DOUBLE_SOLENOID, 0, 1),
-    ROLLERS(new ButtonGroup(8, 9), MapMotorType.CAN, 12), //
-    AIMER(new ButtonGroup(6, 7), MapMotorType.CAN, false, true, JoystickType.JOYSTICK, 13); //
+    INTAKE_ARM(new ButtonGroup(3, 2), MapMotorType.SYSTEM_MOTOR, JoystickType.XBOX, 4, 5),
+    SHOOTER(new ButtonGroup(2, 3), MapMotorType.SYSTEM_MOTOR, true, true, true, JoystickType.JOYSTICK, 6, 7),
+    LIFTER(new ButtonGroup(1, 9), MapMotorType.DOUBLE_SOLENOID, 0, 1),
+    ROLLERS(new ButtonGroup(5, 4), MapMotorType.CAN, 12),
+    AIMER(new ButtonGroup(6, 7), MapMotorType.CAN, false, true, JoystickType.JOYSTICK, 13);
 
     private boolean inverted = false;
     private MapMotorType type;

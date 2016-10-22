@@ -1,6 +1,7 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 import edu.wpi.first.wpilibj.*;
+import org.circuitrunners.grits_2016_stronghold.qa.AutonomousJoystick;
 import org.circuitrunners.grits_2016_stronghold.qa.QuestionAnswerFactory;
 import org.circuitrunners.grits_2016_stronghold.system.*;
 
@@ -15,7 +16,7 @@ public class Robot extends IterativeRobot {
     private RobotDrive drive;
 
     private Joystick joystick;
-
+    private AutonomousJoystick lsd;
     private Joystick xbox;
 
     @Override
@@ -24,9 +25,9 @@ public class Robot extends IterativeRobot {
         for (RobotMap system : RobotMap.values()) {
             if (system.getType() == RobotMap.MapMotorType.SYSTEM_MOTOR) {
                 if (system.isOpposite()) {
-                    systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                    systems.add(new InvertedRobotSystem(system.getButtons(), system.getInverted(), system.isFlop(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                 } else {
-                    systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
+                    systems.add(new BasicRobotSystem(system.getButtons(), system.getInverted(), system.getJoystickType(), Arrays.stream(system.getPorts()).mapToObj(Talon::new).toArray(Talon[]::new)));
                 }
             } else if (system.getType() == RobotMap.MapMotorType.DRIVE_MOTOR) {
                 motor = new Talon(system.getPorts()[0]);
@@ -39,7 +40,7 @@ public class Robot extends IterativeRobot {
             } else if (system.getType() == RobotMap.MapMotorType.CAN) {
                 systems.add(new CANRobotSystem(system.getButtons(), system.getInverted(), system.isOpposite(), new CANTalon(system.getPorts()[0])));
             } else if (system.getType() == RobotMap.MapMotorType.SWITCH) {
-                systems.add(new SwitchSystem(system.getButtons(), new Relay(system.getPorts()[0])));
+                systems.add(new SwitchSystem(system.getButtons(), system.getJoystickType(), new Relay(system.getPorts()[0])));
             } else {
                 System.out.println("Did you just assume my MapMotorType?!?!?! I'm " + system.getType() + "!!!!!!! [TRIGGERED]");
             }
@@ -57,9 +58,27 @@ public class Robot extends IterativeRobot {
     }
 
     @Override
+    public void autonomousInit() {
+        //lsd = new AutonomousJoystick(5);
+        //drive.arcadeDrive(1, 0);
+        /*lsd.setRawButton(5, true);
+        systems.forEach(s -> s.run(lsd));*/
+        /*try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            drive.arcadeDrive(0, 0);
+        }
+        drive.arcadeDrive(0, 0);
+        /*lsd.setRawButton(5, false);
+        systems.forEach(s -> s.run(lsd));*/
+    }
+
+    @Override
     public void teleopPeriodic() {
-        boolean thresholdL = joystick.getMagnitude() >= 0.05;
-        drive.arcadeDrive(thresholdL ? joystick.getY() : 0, thresholdL ? joystick.getX() : 0);
-        systems.forEach(s -> s.run(joystick)); // only works with two joysticks
+        boolean thresholdL = Math.abs(xbox.getRawAxis(1)) >= 0.05;
+        boolean thresholdR = Math.abs(xbox.getRawAxis(4)) >= 0.05;
+        drive.arcadeDrive(thresholdL ? xbox.getRawAxis(1) : 0, thresholdR ? xbox.getRawAxis(4) : 0);
+        systems.forEach(s -> s.run(s.getJoystickType() == RobotMap.JoystickType.XBOX ? xbox : joystick)); // only works with two joysticks
     }
 }

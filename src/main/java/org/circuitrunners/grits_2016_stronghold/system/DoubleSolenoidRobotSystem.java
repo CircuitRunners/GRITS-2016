@@ -3,6 +3,7 @@ package org.circuitrunners.grits_2016_stronghold.system;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
+import org.circuitrunners.grits_2016_stronghold.RobotMap;
 
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
@@ -28,5 +29,10 @@ public class DoubleSolenoidRobotSystem implements RobotSystem {   //Works best w
 
     public void run(Joystick joystick) {
         solenoid.set(getFlipper(joystick));
+    }
+
+    @Override
+    public RobotMap.JoystickType getJoystickType() {
+        return null;
     }
 }

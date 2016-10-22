@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
+import org.circuitrunners.grits_2016_stronghold.RobotMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,5 +43,10 @@ public class CANRobotSystem implements RobotSystem {
     @Override
     public void run(Joystick joystick) {
         motors.forEach(motor -> motor.set(getFlipper(joystick)));
+    }
+
+    @Override
+    public RobotMap.JoystickType getJoystickType() {
+        return null;
     }
 }

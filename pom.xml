@@ -83,13 +83,7 @@
         <dependency>
             <groupId>edu.wpi.first.wpilibj</groupId>
             <artifactId>wpilibJavaFinal</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.0-20160211.214907-7</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>edu.wpi.first.wpilib.networktables.java</groupId>
-            <artifactId>NetworkTables</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>-->
     </dependencies>
 </project>
