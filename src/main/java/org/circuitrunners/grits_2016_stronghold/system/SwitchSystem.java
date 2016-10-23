@@ -2,8 +2,9 @@ package org.circuitrunners.grits_2016_stronghold.system;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Relay.Value;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
-import org.circuitrunners.grits_2016_stronghold.RobotMap;
+import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,21 +12,21 @@ import java.util.Arrays;
 public class SwitchSystem implements RobotSystem {
 
     private final ButtonGroup buttons;
-    private RobotMap.JoystickType joystickType;
+    private JoystickType joystickType;
     private ArrayList<Relay> motors;
-    private boolean pressed = false;
+    private boolean pressed;
 
-    public SwitchSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, Relay... motors) {
+    public SwitchSystem(ButtonGroup buttons, JoystickType joystickType, Relay... motors) {
         this.buttons = buttons;
         this.joystickType = joystickType;
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
-    private Relay.Value getFlipper(Joystick joystick) {
+    private Value getFlipper(Joystick joystick) {
         if (joystick.getRawButton(buttons.getForward())) {
             pressed = !pressed;
         }
-        return pressed ? Relay.Value.kForward : Relay.Value.kOff;
+        return pressed ? Value.kForward : Value.kOff;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class SwitchSystem implements RobotSystem {
     }
 
     @Override
-    public RobotMap.JoystickType getJoystickType() {
+    public JoystickType getJoystickType() {
         return joystickType;
     }
 }

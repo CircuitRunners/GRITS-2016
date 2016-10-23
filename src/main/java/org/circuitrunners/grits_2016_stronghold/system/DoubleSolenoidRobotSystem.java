@@ -1,9 +1,10 @@
 package org.circuitrunners.grits_2016_stronghold.system;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Joystick;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
-import org.circuitrunners.grits_2016_stronghold.RobotMap;
+import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
@@ -17,7 +18,7 @@ public class DoubleSolenoidRobotSystem implements RobotSystem {   // Works best 
         this.solenoid = solenoid;
     }
 
-    private DoubleSolenoid.Value getFlipper(Joystick joystick) {
+    private Value getFlipper(Joystick joystick) {
         if (joystick.getRawButton(buttons.getForward())) {
             return kForward;
         } else if (joystick.getRawButton(buttons.getBackward())) {
@@ -32,7 +33,7 @@ public class DoubleSolenoidRobotSystem implements RobotSystem {   // Works best 
     }
 
     @Override
-    public RobotMap.JoystickType getJoystickType() {
+    public JoystickType getJoystickType() {
         return null; // meh, it doesn't use xbox so we don't need to implement this
     }
 }

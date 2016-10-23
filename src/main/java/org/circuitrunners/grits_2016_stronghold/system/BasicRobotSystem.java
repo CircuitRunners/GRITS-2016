@@ -3,20 +3,20 @@ package org.circuitrunners.grits_2016_stronghold.system;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
-import org.circuitrunners.grits_2016_stronghold.RobotMap;
+import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BasicRobotSystem implements RobotSystem {
-    private ButtonGroup buttons = null;
-    private RobotMap.JoystickType joystickType;
+    private ButtonGroup buttons;
+    private JoystickType joystickType;
     private double forwardSpeed;
     private double backwardSpeed;
     ArrayList<Talon> motors;
     private int axis;
 
-    public BasicRobotSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
+    public BasicRobotSystem(ButtonGroup buttons, JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
         this.buttons = buttons;
         this.joystickType = joystickType;
         this.forwardSpeed = forwardSpeed;
@@ -24,7 +24,7 @@ public class BasicRobotSystem implements RobotSystem {
         this.motors = new ArrayList<>(Arrays.asList(motors));
     }
 
-    public BasicRobotSystem(int axis, RobotMap.JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
+    public BasicRobotSystem(int axis, JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
         this.axis = axis;
         this.joystickType = joystickType;
         this.forwardSpeed = forwardSpeed;
@@ -51,7 +51,7 @@ public class BasicRobotSystem implements RobotSystem {
         motors.parallelStream().forEach(motor -> motor.set(getFlipper(joystick)));
     }
 
-    public RobotMap.JoystickType getJoystickType() {
+    public JoystickType getJoystickType() {
         return joystickType;
     }
 }

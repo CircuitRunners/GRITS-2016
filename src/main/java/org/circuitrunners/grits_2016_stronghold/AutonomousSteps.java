@@ -2,15 +2,15 @@ package org.circuitrunners.grits_2016_stronghold;
 
 public enum AutonomousSteps {
     INTAKE(RobotMap.INTAKE_ARM, true, 5000, AutonomousSteps.DRIVE, null),
-    DRIVE(RobotMap.FRONT_LEFT, true, 5000, null, AutonomousSteps.INTAKE),
+    DRIVE(RobotMap.FRONT_LEFT, true, 5000, null, INTAKE),
     SEX(),
     NEUROTOXIN();
 
-    private RobotMap system = null;
-    private boolean direction = false;
-    private int duration = 0;
-    private AutonomousSteps next = null;
-    private AutonomousSteps previous = null;
+    private RobotMap system;
+    private boolean direction;
+    private int duration;
+    private AutonomousSteps next;
+    private AutonomousSteps previous;
 
     AutonomousSteps(RobotMap system, boolean direction, int duration) {
         this.system = system;

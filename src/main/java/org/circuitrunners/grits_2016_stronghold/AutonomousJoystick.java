@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class AutonomousJoystick extends Joystick {
 
-    HashMap<Integer, Boolean> fakeButtons = new HashMap<>();
+    private HashMap<Integer, Boolean> fakeButtons = new HashMap<>(10, 1);
 
     public AutonomousJoystick(int port) {
         super(port);

@@ -1,7 +1,5 @@
 package org.circuitrunners.grits_2016_stronghold;
 
-import edu.wpi.first.wpilibj.Joystick;
-
 public enum RobotMap {
     FLASHLIGHT(new ButtonGroup(1, 1), SystemType.SWITCH, JoystickType.XBOX, 0), // HACK! we use the same value for both buttons to avoid writing a new class for systems using only one button
     FRONT_LEFT(SystemType.DRIVE_MOTOR, true, 2),
@@ -22,12 +20,12 @@ public enum RobotMap {
      * Drive motor: flips direction of the drive motor
      * CAN motor: sets it to half speed
      */
-    private boolean alternative = false;
+    private boolean alternative;
     private double forwardSpeed = 1;
     private double backwardSpeed = 1;
     private int[] ports;
-    private ButtonGroup buttons = null;
-    private int axis = -1;
+    private ButtonGroup buttons;
+    private int axis;
 
     RobotMap(SystemType type, int... ports) {
         this.type = type;

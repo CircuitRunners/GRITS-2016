@@ -3,12 +3,12 @@ package org.circuitrunners.grits_2016_stronghold.system;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
-import org.circuitrunners.grits_2016_stronghold.RobotMap;
+import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
 public class InvertedRobotSystem extends BasicRobotSystem {
 
-    public InvertedRobotSystem(ButtonGroup buttons, RobotMap.JoystickType joystickType, Talon... motors) {
-        super(buttons, joystickType, motors);
+    public InvertedRobotSystem(ButtonGroup buttons, JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
+        super(buttons, joystickType, forwardSpeed, backwardSpeed, motors);
     }
 
     @Override

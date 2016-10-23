@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
-import org.circuitrunners.grits_2016_stronghold.RobotMap;
+import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CANRobotSystem implements RobotSystem {
 
-    private ButtonGroup buttons = null;
+    private ButtonGroup buttons;
     private int axis;
     private boolean alternative;
     private final ArrayList<CANTalon> motors;
@@ -58,7 +58,7 @@ public class CANRobotSystem implements RobotSystem {
     }
 
     @Override
-    public RobotMap.JoystickType getJoystickType() {
+    public JoystickType getJoystickType() {
         return null; // meh, it doesn't use xbox so we don't need to implement this
     }
 }
