@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.PIDController;
 import org.circuitrunners.grits_2016_stronghold.ButtonGroup;
 import org.circuitrunners.grits_2016_stronghold.RobotMap.JoystickType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CANRobotSystem implements RobotSystem {
@@ -14,26 +13,26 @@ public class CANRobotSystem implements RobotSystem {
     private ButtonGroup buttons;
     private int axis;
     private boolean alternative;
-    private final ArrayList<CANTalon> motors;
+    private CANTalon[] motors;
 
     public CANRobotSystem(ButtonGroup buttons, boolean alternative, CANTalon... motors) {
         this.buttons = buttons;
         this.alternative = alternative;
-        this.motors = new ArrayList<>(Arrays.asList(motors));
-        for (CANTalon motor : motors) {
+        this.motors = motors;
+        Arrays.stream(motors).parallel().forEach(motor -> {
             PIDController pidController = new PIDController(-0.001, 0, 0, motor, motor);
             pidController.disable();
-        }
+        });
     }
 
     public CANRobotSystem(int axis, boolean alternative, CANTalon... motors) {
         this.axis = axis;
         this.alternative = alternative;
-        this.motors = new ArrayList<>(Arrays.asList(motors));
-        for (CANTalon motor : motors) {
+        this.motors = motors;
+        Arrays.stream(motors).parallel().forEach(motor -> {
             PIDController pidController = new PIDController(-0.001, 0, 0, motor, motor);
             pidController.disable();
-        }
+        });
     }
 
     private double getFlipper(Joystick joystick) {
@@ -54,7 +53,7 @@ public class CANRobotSystem implements RobotSystem {
 
     @Override
     public void run(Joystick joystick) {
-        motors.parallelStream().forEach(motor -> motor.set(getFlipper(joystick)));
+        Arrays.stream(motors).parallel().forEach(motor -> motor.set(getFlipper(joystick)));
     }
 
     @Override

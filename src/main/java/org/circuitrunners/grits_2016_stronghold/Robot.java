@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        Arrays.asList(RobotMap.values()).parallelStream().forEach(system -> {
+        Arrays.stream(RobotMap.values()).parallel().forEach(system -> {
             switch (system.getType()) {
                 case SYSTEM_MOTOR:
                     if (system.getButtons() != null) {
