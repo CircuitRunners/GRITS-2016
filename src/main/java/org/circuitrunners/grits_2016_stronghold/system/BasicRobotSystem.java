@@ -15,22 +15,6 @@ public class BasicRobotSystem implements RobotSystem {
     Talon[] motors;
     private int axis;
 
-    public BasicRobotSystem(ButtonGroup buttons, JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
-        this.buttons = buttons;
-        this.joystickType = joystickType;
-        this.forwardSpeed = forwardSpeed;
-        this.backwardSpeed = backwardSpeed;
-        this.motors = motors;
-    }
-
-    public BasicRobotSystem(int axis, JoystickType joystickType, double forwardSpeed, double backwardSpeed, Talon... motors) {
-        this.axis = axis;
-        this.joystickType = joystickType;
-        this.forwardSpeed = forwardSpeed;
-        this.backwardSpeed = backwardSpeed;
-        this.motors = motors;
-    }
-
     double getFlipper(Joystick joystick) {
         if (buttons != null) {
             if (joystick.getRawButton(buttons.getForward())) {
@@ -50,7 +34,41 @@ public class BasicRobotSystem implements RobotSystem {
         Arrays.stream(motors).parallel().forEach(motor -> motor.set(getFlipper(joystick)));
     }
 
+    public ButtonGroup getButtons() {
+        return buttons;
+    }
+
     public JoystickType getJoystickType() {
         return joystickType;
+    }
+
+    public BasicRobotSystem setButtons(ButtonGroup buttons) {
+        this.buttons = buttons;
+        return this;
+    }
+
+    public BasicRobotSystem setJoystickType(JoystickType joystickType) {
+        this.joystickType = joystickType;
+        return this;
+    }
+
+    public BasicRobotSystem setForwardSpeed(double forwardSpeed) {
+        this.forwardSpeed = forwardSpeed;
+        return this;
+    }
+
+    public BasicRobotSystem setBackwardSpeed(double backwardSpeed) {
+        this.backwardSpeed = backwardSpeed;
+        return this;
+    }
+
+    public BasicRobotSystem setMotors(Talon... motors) {
+        this.motors = motors;
+        return this;
+    }
+
+    public BasicRobotSystem setAxis(int axis) {
+        this.axis = axis;
+        return this;
     }
 }
