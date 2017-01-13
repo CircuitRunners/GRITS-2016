@@ -10,7 +10,6 @@ public class ButtonGroup {
         this.backward = backward;
     }
 
-
     public int getForward() {
         return forward;
     }

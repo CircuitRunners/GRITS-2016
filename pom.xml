@@ -88,7 +88,7 @@
         <dependency>
             <groupId>edu.wpi.first.wpilibj</groupId>
             <artifactId>wpilibJavaFinal</artifactId>
-            <version>0.1.0-20160211.214907-7</version>
+            <version>2017</version>
         </dependency>
     </dependencies>
 </project>
