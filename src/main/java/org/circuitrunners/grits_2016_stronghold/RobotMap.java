@@ -8,7 +8,11 @@ public enum RobotMap {
     LIFT(new BasicRobotSystem(1)
             .setBackwardSpeed(0.5)
             .setForwardSpeed(0.5)
-            .setJoystickType(JoystickType.XBOX));
+            .setJoystickType(JoystickType.XBOX)
+            .setAxis(1)),
+    COLLECTOR(new BasicRobotSystem(2)
+            .setJoystickType(JoystickType.JOYSTICK)
+            .setButtons(new ButtonGroup(1, 2)));
 
     private RobotSystem system;
 
@@ -27,7 +31,7 @@ public enum RobotMap {
         private Joystick joystick;
 
         JoystickType(int joystickPort) {
-            this.joystick = new Joystick(joystickPort);
+            joystick = new Joystick(joystickPort);
         }
 
         public Joystick getJoystick() {

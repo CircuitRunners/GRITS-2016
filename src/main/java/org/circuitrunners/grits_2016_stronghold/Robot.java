@@ -5,23 +5,19 @@ import org.circuitrunners.grits_2016_stronghold.qa.QuestionAnswerFactory;
 import org.circuitrunners.grits_2016_stronghold.system.RobotSystem;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Robot extends IterativeRobot {
-    // private ArrayList<Talon> driveSystem = new ArrayList<>(4); TODO: make new drive system
-    private HashMap<RobotMap, RobotSystem> systemMap = new HashMap<>(RobotMap.values().length, 1);
-
-    //RobotDrive drive;
+    private EnumMap<RobotMap, RobotSystem> systemMap = new EnumMap<>(RobotMap.class);
 
     private AutonomousJoystick lsd;
-
-    // private DigitalInput intakeArmLimit; TODO: use intake arm limit switch
 
     @Override
     public void robotInit() {
         Arrays.stream(RobotMap.values()).parallel().forEach(s -> systemMap.put(s, s.getSystem()));
-
-        // intakeArmLimit = new DigitalInput(1);
 
         String[] qa = QuestionAnswerFactory.produceQA();
         System.out.println("Question: " + qa[0] + " Answer: " + qa[1]);
@@ -29,16 +25,16 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
-        // TODO: update to new robot system system
         // TODO: finish enum-based autonomous
+        ScheduledExecutorService stopAuto = Executors.newSingleThreadScheduledExecutor();
         lsd = new AutonomousJoystick(2);
         long endTime;
         for (AutonomousSteps autoStep : AutonomousSteps.values()) {
-            RobotMap system = autoStep.getSystem();
+            RobotSystem system = autoStep.getSystem().getSystem();
+            Thread thread = new Thread(() -> system.run(lsd));
+            thread.start();
             endTime = System.currentTimeMillis() - autoStep.getDuration();
-            while (System.currentTimeMillis() < endTime) {
-                system.getSystem().run(lsd); // TODO: make this actually work
-            }
+            stopAuto.schedule(thread::interrupt, endTime, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -53,6 +49,5 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
-        /*drive.arcadeDrive(0, 0);*/
     }
 }

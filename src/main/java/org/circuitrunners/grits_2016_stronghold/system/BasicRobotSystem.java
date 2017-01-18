@@ -80,11 +80,6 @@ public class BasicRobotSystem implements RobotSystem {
         return this;
     }
 
-    public BasicRobotSystem setMotors(Talon... motors) {
-        this.motors = motors;
-        return this;
-    }
-
     public BasicRobotSystem setAxis(int axis) {
         this.axis = axis;
         return this;
