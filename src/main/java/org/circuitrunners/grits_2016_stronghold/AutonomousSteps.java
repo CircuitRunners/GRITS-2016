@@ -1,10 +1,7 @@
 package org.circuitrunners.grits_2016_stronghold;
 
 public enum AutonomousSteps {
-    INTAKE(RobotMap.INTAKE_ARM, true, 5000, AutonomousSteps.DRIVE, null),
-    DRIVE(RobotMap.FRONT_LEFT, true, 5000, null, INTAKE),
-    SEX(),
-    NEUROTOXIN();
+    INTAKE(RobotMap.LIFT, true, 5000);
 
     private RobotMap system;
     private boolean direction;
