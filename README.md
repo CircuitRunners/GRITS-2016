@@ -1,2 +1,2 @@
 # grits_2016_stronghold
-code to function to make the robot move i dont know for simplicity's sake amithav
+roboRIO code that implements systems to make robot code more modular and easier to debug and use.
